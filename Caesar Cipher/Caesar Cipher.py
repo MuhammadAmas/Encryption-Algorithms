@@ -7,20 +7,26 @@ def get_base_index(char_code):
         return None
 
 
+def transform_character(char_code, key, is_encrypt):
+    base_index = get_base_index(char_code)
+
+    if base_index is not None:
+        char_code -= base_index
+        if is_encrypt:
+            char_code = (char_code + key) % 26 + base_index
+        else:
+            char_code = (char_code - key) % 26 + base_index
+        return chr(char_code)
+    else:
+        return chr(char_code)
+
+
 def encrypt(text, key):
     cipher_text = ''
 
     for character in text:
-        char_code = ord(character)
-        starting_index = get_base_index(char_code)
-
-        if starting_index is not None:
-            char_code -= starting_index
-            char_code = ((char_code + key) % 26 + starting_index)
-            cipher_character = chr(char_code)
-            cipher_text += cipher_character
-        else:
-            cipher_text += character
+        encrypted_character = transform_character(ord(character), key, True)
+        cipher_text += encrypted_character
 
     return cipher_text
 
@@ -29,15 +35,8 @@ def decrypt(text, key):
     decrypted_text = ''
 
     for character in text:
-        char_code = ord(character)
-        starting_index = get_base_index(char_code)
-        if starting_index is not None:
-            char_code -= starting_index
-            char_code = ((char_code - key) % 26 + starting_index)
-            decrypted_character = chr(char_code)
-            decrypted_text += decrypted_character
-        else:
-            decrypted_text += character
+        decrypted_character = transform_character(ord(character), key, False)
+        decrypted_text += decrypted_character
 
     return decrypted_text
 
